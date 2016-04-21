@@ -31,7 +31,7 @@ class ViewController: UIViewController {
         
         print("operandStack = \(operandStack)")
     }
-    
+     
     var displayValue: Double {
         get {
             return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
@@ -53,30 +53,27 @@ class ViewController: UIViewController {
             enter()
         }
         switch operation {
-            case "➕": performOp {$0 + $1}
-            case "➖": performOp {$0 - $1}
-            case "➗": performOp {$0 / $1}
-            case "✖️": performOp {$0 * $1}
-            case "%": performOp {$0 % $1}
+            case "➕": performOp(add)
+            case "➖": performOp(subtract)
+            case "➗": performOp(divide)
+            case "✖️": performOp(multiply)
+            case "%": performOp(mod)
             default: break
         }
     }
     
     func performOp(operation: (Double, Double) -> Double) {
         if operandStack.count >= 2 {
-            displayValue = operation (operandStack.removeLast(), operandStack.removeLast())
+            displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
+            
+            enter()
+        } else if operandStack.count == 1 {
+            displayValue = operandStack.removeLast()
             
             enter()
         }
     }
     
-    func performOp(operation: Double -> Double) {
-        if operandStack.count == 1 {
-            displayValue = operation(operandStack.removeLast())
-            
-            enter()
-        }
-    }
     
     let add = {(input1 : Double, input2 : Double) -> Double in
         return input1 + input2
@@ -97,12 +94,6 @@ class ViewController: UIViewController {
     let mod = {(input1 : Double, input2 : Double) -> Double in
         return input1 % input2
     }
-    
-    let simpleCalc = {(input1 : Double, input2 : Double, op : (Double, Double) -> Double) -> Double in
-        return op(input1, input2)
-    }
-    
-    
     
 }
 
