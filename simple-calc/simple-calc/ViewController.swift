@@ -13,6 +13,7 @@ class ViewController: UIViewController {
     @IBOutlet weak var display: UILabel!
     var isInput = false
     var operandStack = Array<Double>()
+    var operation = ""
     
     @IBAction func enternumber(sender: UIButton) {
         let digit = sender.currentTitle!
@@ -27,11 +28,23 @@ class ViewController: UIViewController {
     
     @IBAction func enter() {
         isInput = false
+        if operation == "" {
+            operandStack.removeAll()
+        }
         operandStack.append(displayValue)
         
         print("operandStack = \(operandStack)")
+        
+        switch operation {
+            case "➕": performOp(add)
+            case "➖": performOp(subtract)
+            case "➗": performOp(divide)
+            case "✖️": performOp(multiply)
+            case "%": performOp(mod)
+            default: break
+        }
     }
-     
+    
     var displayValue: Double {
         get {
             return NSNumberFormatter().numberFromString(display.text!)!.doubleValue
@@ -47,24 +60,19 @@ class ViewController: UIViewController {
     }
     
     @IBAction func operate(sender: UIButton) {
-        let operation = sender.currentTitle!
-        
         if isInput {
             enter()
         }
-        switch operation {
-            case "➕": performOp(add)
-            case "➖": performOp(subtract)
-            case "➗": performOp(divide)
-            case "✖️": performOp(multiply)
-            case "%": performOp(mod)
-            default: break
-        }
+        
+        operation = sender.currentTitle!
     }
     
-    func performOp(operation: (Double, Double) -> Double) {
+    func performOp(op: (Double, Double) -> Double) {
+        operation = ""
         if operandStack.count >= 2 {
-            displayValue = operation(operandStack.removeLast(), operandStack.removeLast())
+            let input2 = operandStack.removeLast()
+            let input1 = operandStack.removeLast()
+            displayValue = op(input1, input2)
             
             enter()
         } else if operandStack.count == 1 {
