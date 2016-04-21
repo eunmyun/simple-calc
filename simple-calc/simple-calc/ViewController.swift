@@ -14,6 +14,8 @@ class ViewController: UIViewController {
     var isInput = false
     var operandStack = Array<Double>()
     var operation = ""
+    var countArry = Array<Double>()
+    var avgArry = Array<Double>()
     
     @IBAction func enternumber(sender: UIButton) {
         let digit = sender.currentTitle!
@@ -34,13 +36,17 @@ class ViewController: UIViewController {
         operandStack.append(displayValue)
         
         print("operandStack = \(operandStack)")
+        print("count = \(countArry)")
+        print("Average Array = \(avgArry)")
         
         switch operation {
-            case "➕": performOp(add)
-            case "➖": performOp(subtract)
-            case "➗": performOp(divide)
-            case "✖️": performOp(multiply)
-            case "%": performOp(mod)
+            case "➕": simpleOp(add)
+            case "➖": simpleOp(subtract)
+            case "➗": simpleOp(divide)
+            case "✖️": simpleOp(multiply)
+            case "%": simpleOp(mod)
+            case "count": count()
+            case "avg": avg()
             default: break
         }
     }
@@ -60,14 +66,21 @@ class ViewController: UIViewController {
     }
     
     @IBAction func operate(sender: UIButton) {
-        if isInput {
+        if isInput && sender.currentTitle != "count" && sender.currentTitle != "avg" {
             enter()
+        } else {
+            isInput = false
         }
-        
         operation = sender.currentTitle!
+            switch operation {
+            case "fact": fact()
+            case "count": countArry.append(displayValue)
+            case "avg": avgArry.append(displayValue)
+            default: break
+        }
     }
     
-    func performOp(op: (Double, Double) -> Double) {
+    func simpleOp(op: (Double, Double) -> Double) {
         operation = ""
         if operandStack.count >= 2 {
             let input2 = operandStack.removeLast()
@@ -80,6 +93,31 @@ class ViewController: UIViewController {
             
             enter()
         }
+    }
+    
+    func fact() {
+        var num = Int(operandStack.removeLast())
+        var result = num
+        while num - 1 > 1 {
+            num -= 1
+            result *= num
+        }
+        displayValue = Double(result)
+        operandStack.append(Double(result))
+    }
+    
+    func count() {
+        displayValue = Double(countArry.count)
+        countArry.removeAll()
+    }
+    
+    func avg() {
+        var sum = avgArry[0]
+        for index in 1...avgArry.count - 1 {
+            sum += avgArry[index]
+        }
+        displayValue = Double(sum / Double(avgArry.count))
+        avgArry.removeAll()
     }
     
     
@@ -100,8 +138,8 @@ class ViewController: UIViewController {
     }
     
     let mod = {(input1 : Double, input2 : Double) -> Double in
-        return input1 % input2
+        return Double(Int(input1) % Int(input2))
     }
-    
+
 }
 
